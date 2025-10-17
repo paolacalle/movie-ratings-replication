@@ -19,6 +19,14 @@ Each row in the raw dataset represents one participant's responses across:
 
 After reformatting, the output table has one row per (participant, movie) pair, 
 with repeated participant-level attributes (personality, demographics, etc.).
+
+You can also generate summary tables:
+    - One row per participant with all their attributes
+    - One row per movie review with participant ID, movie name, rating, and year
+    - etc.
+    
+You can call this script from other EDA scripts to preprocess the data before analysis.
+Makes it consistent and reusable across analyses.
 """
 
 def clean_column_name(name):

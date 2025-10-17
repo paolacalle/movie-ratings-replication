@@ -21,7 +21,6 @@ def get_movie_aggregation(df):
     
     return movie_df
 
-
 def median_split(series, high_label='high', low_label='low'):
     median_value = series.median()
     return series.apply(lambda x: high_label if x >= median_value else low_label)
