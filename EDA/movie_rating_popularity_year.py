@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import argparse
 import movie_data_formatter as mdf
+import statsmodels.api as sm
 
 def get_movie_aggregation(df):
     movie_group = df.groupby('movie_name')
@@ -41,8 +41,8 @@ def plot_movie_popularity(movie_df, show=True):
     return plt
 
 def plot_popular_median_split(popular_df, show=True):
-    plt.figure(figsize=(10, 6))
-    colors = {'high': 'blue', 'low': 'orange'}
+    plt.figure(figsize=(12, 3))
+    colors = {'high': 'black', 'low': 'grey'}
     for level in popular_df['popularity_level'].unique():
         subset = popular_df[popular_df['popularity_level'] == level]
         plt.scatter(subset['count_num_reviews'], subset['average_rating'], 
@@ -51,21 +51,73 @@ def plot_popular_median_split(popular_df, show=True):
     plt.xlabel('Number of Reviews')
     plt.ylabel('Average Rating')
     plt.legend(title='Popularity Level')
+    
+    # y - axis has to be 0, 0.5, 1, 1.5, ..., 4
+    plt.yticks([i*0.5 for i in range(9)])
+    
+    # min and max for y axis
+    min_y = popular_df['average_rating'].min()
+    max_y = popular_df['average_rating'].max()
+    plt.ylim(min_y - 0.5, max_y + 0.5)
+    
     plt.grid(True)
+    
     if show:
         plt.show()
         
     return plt
 
+def boxplot_popularity_median_split(movie_df, show=True):
+    plt.figure(figsize=(12, 3))
+    sns.boxplot(x='average_rating', y='popularity_level', data=movie_df, color='grey')
+    
+    # plot the dots for each data point
+    sns.stripplot(x='average_rating', y='popularity_level', data=movie_df,
+                  color='black', alpha=0.5, jitter=True)
+    
+    # increase font size
+    # plt.xticks(fontsize=12)
+    # plt.yticks(fontsize=12)
+    
+    plt.title('Boxplots of Average Rating by Popularity Level')
+    plt.xlabel('Popularity Level')
+    plt.ylabel('Average Rating')
+    plt.grid(True)
+    
+    if show:
+        plt.show()
+    return plt
+
+def plot_linear_regression_median_split(movie_df, show=True):
+    # per median split
+    movie_df['popularity_binary'] = movie_df['popularity_level'].apply(lambda x: 1 if x == 'high' else 0)
+    X = sm.add_constant(movie_df['popularity_binary'])
+    y = movie_df['average_rating']
+    model = sm.OLS(y, X).fit()
+    
+    plt.figure(figsize=(10, 6))
+    plt.scatter(movie_df['popularity_binary'], movie_df['average_rating'], alpha=0.6)
+    plt.plot([0, 1], model.predict([ [1,0], [1,1] ]), color='red', linewidth=2)
+    plt.xticks([0, 1], ['Low Popularity', 'High Popularity'])
+    plt.title('Linear Regression: Popularity Level vs Average Rating')
+    plt.xlabel('Popularity Level')
+    plt.ylabel('Average Rating')
+    plt.grid(True)
+    if show:
+        plt.show()
+    
+    return plt
+
 def plot_year_median_split(movie_df, show=True):
     plt.figure(figsize=(10, 6))
     colors = {'new': 'green', 'old': 'red'}
+    
     for level in movie_df['year_level'].unique():
         subset = movie_df[movie_df['year_level'] == level]
-        plt.scatter(subset['count_num_reviews'], subset['average_rating'], 
+        plt.scatter(subset['year'], subset['average_rating'], 
                     c=colors[level], label=level, alpha=0.6)
     plt.title('Movie Popularity by Year Median Split')
-    plt.xlabel('Number of Reviews')
+    plt.xlabel('Year')
     plt.ylabel('Average Rating')
     plt.legend(title='Year Level')
     plt.grid(True)
