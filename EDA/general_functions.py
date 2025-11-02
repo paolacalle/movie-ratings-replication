@@ -13,6 +13,38 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 
 
+def two_sample_ttest_ind_df(n1, n2):
+    """
+    Calculate the degrees of freedom for a two-sample t-test with equal variances.
+    
+    Parameters:
+    n1 (int): Size of sample 1
+    n2 (int): Size of sample 2
+    
+    Returns:
+    int: Degrees of freedom
+    """
+    return n1 + n2 - 2
+    
+
+def welch_df(s1, s2, n1, n2):
+    """
+    Calculate the degrees of freedom for Welch's t-test.
+    
+    Parameters:
+    s1 (float): Variance of sample 1
+    s2 (float): Variance of sample 2
+    n1 (int): Size of sample 1
+    n2 (int): Size of sample 2
+    
+    Returns:
+    float: Degrees of freedom
+    """
+    numerator = (s1/n1 + s2/n2) ** 2
+    denominator = ((s1/n1) ** 2) / (n1 - 1) + ((s2/n2) ** 2) / (n2 - 1)
+    return numerator / denominator
+
+
 def is_p_drop(statistic_name, stat, p, stat_testing="mean", alpha=0.005):
     print(f"{statistic_name}: {stat:.3f}, p-value: {p:.4f}")
     if p < alpha:
@@ -22,18 +54,18 @@ def is_p_drop(statistic_name, stat, p, stat_testing="mean", alpha=0.005):
 
 
 def plot_distrubtion(movie_df, name, y, show=True, bins=30):
-    plt.figure(figsize=(6, 4))
+    plt.figure(figsize=(7, 5))
     sns.histplot(movie_df[y], bins=bins, kde=True, color='grey', edgecolor='black')
 
     # horizontal lines for mean and median
-    mean_rating = movie_df[y].mean()
-    median_rating = movie_df[y].median()
+    # mean_rating = movie_df[y].mean()
+    # median_rating = movie_df[y].median()
 
-    plt.axvline(mean_rating, color='red', linestyle='--', label=f'Mean: {mean_rating:.2f}')
-    plt.axvline(median_rating, color='green', linestyle='--', label=f'Median: {median_rating:.2f}')
-    plt.legend()
-    
-    plt.title('Distribution of Average Movie Ratings for ' + name)
+    # plt.axvline(mean_rating, color='red', linestyle='--', label=f'Mean: {mean_rating:.2f}')
+    # plt.axvline(median_rating, color='green', linestyle='--', label=f'Median: {median_rating:.2f}')
+    # plt.legend()
+
+    plt.title(name)
     plt.xlabel(y.replace('_', ' ').title())
     plt.ylabel('Frequency')
     plt.grid(True)
