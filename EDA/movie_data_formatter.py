@@ -1,6 +1,7 @@
 import pandas as pd
 import argparse
 import re
+import numpy as np
 
 
 """
@@ -46,17 +47,24 @@ def clean_column_name(name):
 
 def extract_movie_name(name):
     # object in parentheses is the year 
-    print(name)
     year = re.search(r'\((\d{4})\)', name)
     if year:
         year = year.group(1)
     else:
         year = None
-    print(year)
+
     # object before the year is the movie name
     name = name.split('(')[0].strip()
-    print(name)
     return name, year
+
+def map_gender_identity(value):
+    gender_map = {
+        1: 'Male',
+        2: 'Female',
+        3: 'Non-binary'
+    }
+    
+    return gender_map.get(value, np.nan)
 
 def define_base_columns(df):
     base = {
@@ -106,6 +114,9 @@ def convert_to_table(df):
                 base_processed_data[feature].append(value)
                 
     processed_df = pd.DataFrame(base_processed_data)
+    
+    # clean column names
+    processed_df.columns = [clean_column_name(col) for col in processed_df.columns]
     return processed_df
     
 def convert_to_reporter_table(df):

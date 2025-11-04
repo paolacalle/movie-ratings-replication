@@ -68,24 +68,21 @@ def plot_popular_median_split(popular_df, show=True):
     return plt
 
 def boxplot_popularity_median_split(movie_df, show=True):
-    plt.figure(figsize=(12, 3))
+    plt.figure(figsize=(12, 5))
     sns.boxplot(x='average_rating', y='popularity_level', data=movie_df, color='grey')
     
     # plot the dots for each data point
     sns.stripplot(x='average_rating', y='popularity_level', data=movie_df,
                   color='black', alpha=0.5, jitter=True)
     
-    # increase font size
-    # plt.xticks(fontsize=12)
-    # plt.yticks(fontsize=12)
-    
     plt.title('Boxplots of Average Rating by Popularity Level')
-    plt.xlabel('Popularity Level')
-    plt.ylabel('Average Rating')
+    plt.xlabel('Average Rating')
+    plt.ylabel('Popularity Level')
     plt.grid(True)
     
     if show:
         plt.show()
+        
     return plt
 
 def plot_linear_regression_median_split(movie_df, show=True):
@@ -109,29 +106,40 @@ def plot_linear_regression_median_split(movie_df, show=True):
     return plt
 
 def plot_year_median_split(movie_df, show=True):
-    plt.figure(figsize=(10, 6))
-    colors = {'new': 'green', 'old': 'red'}
-    
+    plt.figure(figsize=(12, 3))
+    colors = {'new': 'black', 'old': 'grey'}
     for level in movie_df['year_level'].unique():
         subset = movie_df[movie_df['year_level'] == level]
         plt.scatter(subset['year'], subset['average_rating'], 
-                    c=colors[level], label=level, alpha=0.6)
+                    c=colors[level], label=level, alpha=0.9)
     plt.title('Movie Popularity by Year Median Split')
     plt.xlabel('Year')
     plt.ylabel('Average Rating')
     plt.legend(title='Year Level')
+    
+    plt.yticks([i*0.5 for i in range(9)])
+    min_y = movie_df['average_rating'].min()
+    max_y = movie_df['average_rating'].max()
+    plt.ylim(min_y - 0.5, max_y + 0.5)
+    
     plt.grid(True)
+    
     if show:
         plt.show()
         
     return plt
 
 def plot_boxplots_year_level(movie_df, show=True):
-    plt.figure(figsize=(12, 6))
-    sns.boxplot(x='year_level', y='average_rating', data=movie_df)
+    plt.figure(figsize=(12, 3))
+    sns.boxplot(x='average_rating', y='year_level', data=movie_df, color ='grey')
+    
+    # plot the dots for each data point
+    sns.stripplot(x='average_rating', y='year_level', data=movie_df,
+                  color='black', alpha=0.5, jitter=True)
+    
     plt.title('Boxplots of Average Rating by Year Level')
-    plt.xlabel('Year Level')
-    plt.ylabel('Average Rating')
+    plt.xlabel('Average Rating')
+    plt.ylabel('Year Level')
     plt.grid(True)
     if show:
         plt.show()
